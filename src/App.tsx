@@ -4,7 +4,7 @@ import Input from './Input'
 import ShowCase from './ShowCase';
 import { auth, db } from './firebase'
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import { onSnapshot, collection, setDoc, doc} from 'firebase/firestore'
+import { onSnapshot, collection, getDocs, getDoc} from 'firebase/firestore'
 
 interface Data{
   date?: string;
@@ -15,7 +15,7 @@ interface Data{
 
 const App = () =>{
   const [data, setData] = useState<Data>({})
-  const [user,setUser] = useState<object | null >(null)
+  const [user,setUser] = useState<any | null >(null)
   const [account,setAccount] = useState<string>('')
   const [password,setPassword] = useState<string>('')
 
@@ -35,11 +35,35 @@ const App = () =>{
   }
 
   useEffect(() => {
+    if(user != null){
+      let docId:string = ""
+      getDocs(collection(db,'user'))
+        .then((snapshot) => {
+          snapshot.docs.forEach(doc => {
+            if(doc.data().email === user.email){
+              docId = doc.id
+            }
+          })
+        })
+        .then(() =>{
+          const collectionDB = collection(db,'user',docId,'schedule')
+          getDocs(collectionDB)
+            .then((snap) => {
+              snap.docs.forEach(doc => {
+                console.log(doc.data().time)
+                const s = new Date(doc.data().time.seconds)
+                // expected output "8/30/2017"  
+                console.log(s);
+              })
+            })
+        })
+    }
   },[user])
 
   useEffect(()=>{
     const userGet = localStorage.getItem('user')
-    setUser(JSON.parse(userGet!)) //fix | null 
+    
+    setUser( JSON.parse(userGet!)) //fix | null 
   },[])
 
   return (
