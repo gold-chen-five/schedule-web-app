@@ -1,6 +1,8 @@
-import firebase from 'firebase'
+import { initializeApp } from 'firebase/app'
+import { getAuth } from 'firebase/auth'
+import { getFirestore} from 'firebase/firestore'
 
-const firebaseApp = firebase.initializeApp({
+const firebaseConfig = {
   apiKey: "AIzaSyBMiGCykLQaRPp4JHuN2e8Rw_tq-rRP34k",
   authDomain: "schedule-web-app-493ed.firebaseapp.com",
   projectId: "schedule-web-app-493ed",
@@ -8,9 +10,10 @@ const firebaseApp = firebase.initializeApp({
   messagingSenderId: "863835816058",
   appId: "1:863835816058:web:b32a12a3d5b2bd53b87bc3",
   measurementId: "G-5BCNV112J3"
-  });
+  };
 
-  const db = firebase.firestore();
-  const auth = firebase.auth();
-  const provider = new firebase.auth.GoogleAuthProvider();
-  export { auth, db, provider }
+const app = initializeApp(firebaseConfig)
+const auth = getAuth(app)
+const db = getFirestore(app)
+
+export { auth, db}
